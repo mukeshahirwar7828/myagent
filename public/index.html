@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mukesh AI</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="chat-container">
+        <header class="chat-header">
+            <div class="header-content">
+                <span class="logo-icon">✨</span>
+                <h1>Mukesh AI</h1>
+            </div>
+            <p class="subtitle">Your intelligent companion</p>
+        </header>
+
+        <main class="chat-box" id="chat-box">
+            <div class="message ai-message welcome-message">
+                <div class="avatar" style="font-size: 1.2rem; font-weight: bold; padding-bottom: 2px;">
+                    M
+                </div>
+                <div class="message-content">
+                    <p>Namaste! I am <strong>Mukesh</strong>, your premium AI assistant. How can I help you today? You
+                        can also upload documents for me to read!</p>
+                </div>
+            </div>
+        </main>
+
+        <footer class="chat-footer">
+            <div id="file-preview-container" class="preview-container hidden">
+                <div class="file-chip">
+                    <svg stroke="currentColor" fill="none" viewBox="0 0 24 24" class="file-icon">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                        </path>
+                    </svg>
+                    <span id="file-name-display">document.pdf</span>
+                    <button type="button" id="remove-file-btn" class="remove-btn">&times;</button>
+                </div>
+            </div>
+
+            <form id="chat-form">
+                <div class="input-wrapper">
+                    <label for="file-input" class="attach-btn" title="Upload Document (.txt, .pdf)">
+                        <svg stroke="currentColor" fill="none" viewBox="0 0 24 24" class="icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
+                            </path>
+                        </svg>
+                    </label>
+                    <input type="file" id="file-input" accept=".txt,.pdf" hidden>
+
+                    <input type="text" id="message-input" placeholder="Ask Mukesh anything..." autocomplete="off">
+
+                    <button type="submit" id="send-button">
+                        <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 24 24"
+                            class="icon">
+                            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <div class="footer-note">Mukesh AI can make mistakes. Consider verifying important information.</div>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
