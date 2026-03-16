@@ -6,6 +6,9 @@ const path = require('path');
 const multer = require('multer');
 const fs = require('fs');
 const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
+const Papa = require('papaparse');
+const xlsx = require('xlsx');
 
 // Load environment variables
 dotenv.config();
@@ -47,20 +50,52 @@ app.post('/chat', upload.single('document'), async (req, res) => {
         }
 
         const userMessage = req.body.message || '';
-        let fileContext = '';
+        let fileContextText = '';
+        let imagePartData = null;
 
         if (req.file) {
             try {
-                if (req.file.mimetype === 'application/pdf') {
-                    const dataBuffer = fs.readFileSync(req.file.path);
+                const mimeType = req.file.mimetype;
+                const filePath = req.file.path;
+                const originalName = req.file.originalname.toLowerCase();
+
+                if (mimeType.startsWith('image/')) {
+                    // It's an image, convert to base64 for Gemini inlineData
+                    const dataBuffer = fs.readFileSync(filePath);
+                    imagePartData = {
+                        inlineData: {
+                            data: dataBuffer.toString("base64"),
+                            mimeType: mimeType
+                        }
+                    };
+                }
+                else if (mimeType === 'application/pdf' || originalName.endsWith('.pdf')) {
+                    const dataBuffer = fs.readFileSync(filePath);
                     const pdfData = await pdfParse(dataBuffer);
-                    fileContext = pdfData.text;
-                } else {
-                    fileContext = fs.readFileSync(req.file.path, 'utf8');
+                    fileContextText = pdfData.text;
+                }
+                else if (originalName.endsWith('.docx')) {
+                    const result = await mammoth.extractRawText({ path: filePath });
+                    fileContextText = result.value;
+                }
+                else if (originalName.endsWith('.csv')) {
+                    const csvData = fs.readFileSync(filePath, 'utf8');
+                    const parsed = Papa.parse(csvData, { header: true });
+                    fileContextText = JSON.stringify(parsed.data, null, 2);
+                }
+                else if (originalName.endsWith('.xlsx') || originalName.endsWith('.xls')) {
+                    const workbook = xlsx.readFile(filePath);
+                    const sheetName = workbook.SheetNames[0];
+                    const sheet = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                    fileContextText = JSON.stringify(sheet, null, 2);
+                }
+                else {
+                    // Fallback to plain text for everything else (.txt, .md, .js, .json, etc)
+                    fileContextText = fs.readFileSync(filePath, 'utf8');
                 }
             } catch (e) {
                 console.error("Error reading file:", e);
-                fileContext = "[Error extracting text from document]";
+                fileContextText = "[Error processing attached file]";
             } finally {
                 // Clear the temporary file
                 try {
@@ -72,11 +107,11 @@ app.post('/chat', upload.single('document'), async (req, res) => {
         }
 
         let combinedContent = userMessage;
-        if (fileContext) {
-            combinedContent += `\n\n--- [Attached Document] ---\n${fileContext}\n--- [End of Document] ---`;
+        if (fileContextText) {
+            combinedContent += `\n\n--- [Attached Document Extract] ---\n${fileContextText.substring(0, 15000)}\n--- [End of Document] ---`;
         }
 
-        if (!combinedContent && history.length === 0) {
+        if (!combinedContent && !imagePartData && history.length === 0) {
             return res.status(400).json({ error: 'Message or document is required' });
         }
 
@@ -92,8 +127,12 @@ app.post('/chat', upload.single('document'), async (req, res) => {
             }
         }
 
-        if (combinedContent) {
-            formattedContents.push({ role: 'user', parts: [{ text: combinedContent }] });
+        if (combinedContent || imagePartData) {
+            let parts = [];
+            if (combinedContent) parts.push({ text: combinedContent });
+            if (imagePartData) parts.push(imagePartData);
+            
+            formattedContents.push({ role: 'user', parts: parts });
         }
 
         const response = await ai.models.generateContent({

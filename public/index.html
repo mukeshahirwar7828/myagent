@@ -15,23 +15,43 @@
         <div class="blob blob-2"></div>
     </div>
 
-    <div class="chat-container">
+    <div class="app-wrapper">
+        <div class="chat-container">
         <header class="chat-header">
             <div class="header-content">
-                <span class="logo-icon">✨</span>
+                <span class="logo-icon">—͟͞★</span>
                 <h1>Mukesh AI</h1>
             </div>
-            <p class="subtitle">Your intelligent companion</p>
+            <p class="subtitle"><i>Indian Institute of Information Technology, Nagpur</i></p>
+            <button id="sound-toggle-btn" class="sound-toggle" title="Toggle Auto-Sound" style="position: absolute; right: 20px; top: 20px; background: none; border: none; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 8px; border-radius: 50%; transition: background-color 0.2s;">
+                <svg id="sound-icon" stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="24" width="24">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path class="sound-wave" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    <path class="sound-wave-outer" d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+                    <line class="mute-line hidden" x1="1" y1="1" x2="23" y2="23" stroke="currentColor" stroke-width="2"></line>
+                </svg>
+            </button>
         </header>
 
         <main class="chat-box" id="chat-box">
             <div class="message ai-message welcome-message">
                 <div class="avatar" style="font-size: 1.2rem; font-weight: bold; padding-bottom: 2px;">
-                    M
+                    ᴍꫝ
                 </div>
                 <div class="message-content">
-                    <p>Namaste! I am <strong>Mukesh</strong>, your premium AI assistant. How can I help you today? You
-                        can also upload documents for me to read!</p>
+                    <div class="message-text">
+                        <p>Namaste! I am <strong>Mukesh</strong>, your premium AI assistant. How can I help you today?
+                            You
+                            can also upload documents for me to read!</p>
+                    </div>
+                    <button class="read-aloud-btn" title="Read message aloud"
+                        onclick="speakText(this.parentElement.querySelector('.message-text').innerText || this.parentElement.querySelector('.message-text').textContent)">
+                        <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"
+                            stroke-linecap="round" stroke-linejoin="round" height="16" width="16">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </button>
                 </div>
             </div>
         </main>
@@ -51,14 +71,29 @@
 
             <form id="chat-form">
                 <div class="input-wrapper">
-                    <label for="file-input" class="attach-btn" title="Upload Document (.txt, .pdf)">
+                    <button type="button" id="mic-btn" class="attach-btn" title="Voice Input">
+                        <svg stroke="currentColor" fill="none" viewBox="0 0 24 24" class="icon" id="mic-icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 1v10M12 1a3 3 0 00-3 3v6a3 3 0 006 0V4a3 3 0 00-3-3z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 10v2a7 7 0 01-14 0v-2M12 19v4M8 23h8"></path>
+                        </svg>
+                    </button>
+                    <button type="button" id="camera-btn" class="attach-btn" title="Take Photo">
+                        <svg stroke="currentColor" fill="none" viewBox="0 0 24 24" class="icon">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                    <label for="file-input" class="attach-btn" title="Upload Document">
                         <svg stroke="currentColor" fill="none" viewBox="0 0 24 24" class="icon">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13">
                             </path>
                         </svg>
                     </label>
-                    <input type="file" id="file-input" accept=".txt,.pdf" hidden>
+                    <input type="file" id="file-input" hidden>
 
                     <input type="text" id="message-input" placeholder="Ask Mukesh anything..." autocomplete="off">
 
@@ -70,9 +105,46 @@
                     </button>
                 </div>
             </form>
-            <div class="footer-note">Mukesh AI can make mistakes. Consider verifying important information.</div>
+            <div class="footer-note"><i>Mukesh AI – Aapka apna intelligent AI assistant.</i></div>
         </footer>
+        </div>
+
+        <aside class="history-sidebar">
+            <div class="history-header">
+                <h2>Chat History</h2>
+                <button id="clear-history-btn" class="clear-btn" title="Clear History">
+                    <svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round" height="16" width="16">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                </button>
+            </div>
+            <div class="history-list" id="history-list">
+                <!-- History items will be injected here -->
+            </div>
+        </aside>
     </div>
+
+    <!-- Camera Modal Overlay -->
+    <div id="camera-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Take Photo</h3>
+                <button type="button" id="close-camera-btn" class="close-modal-btn">&times;</button>
+            </div>
+            <div class="camera-container">
+                <video id="camera-feed" autoplay playsinline></video>
+                <canvas id="camera-canvas" class="hidden"></canvas>
+            </div>
+            <div class="modal-footer">
+                <button type="button" id="capture-btn" class="primary-btn">
+                    <span class="shutter-icon"></span>
+                    Capture
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 
